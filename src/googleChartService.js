@@ -26,6 +26,9 @@
             self.setOptions = setOptions;
             self.setup = setup;
             self.setView = setView;
+            self.lockDraw = lockDraw;
+            self.unLockDraw = unLockDraw;
+            self.isDrawLocked = isDrawLocked;
 
             var $google,
                 _libraryPromise,
@@ -40,6 +43,7 @@
                 _innerVisualization,
                 _formatManager,
                 _needsUpdate = true,
+                _lockDraw = false,
                 _customFormatters,
                 _serviceDeferred,
                 serviceListeners = {},
@@ -192,8 +196,12 @@
             }
 
             function _runDrawCycle() {
-                _activateServiceEvent('beforeDraw');
-                _chartWrapper.draw();
+                console.log('[GoogleChartService] running draw cycle...');
+                if (!isDrawLocked() && _chartWrapper !== undefined) {
+                    console.log('[GoogleChartService] -> before draw...');
+                    _activateServiceEvent('beforeDraw');
+                    _chartWrapper.draw();
+                }
             }
 
             /*
@@ -246,6 +254,24 @@
 
             function isApiReady() {
                 return _apiReady;
+            }
+
+            function lockDraw() {
+                _lockDraw = true;
+                console.log('[GoogleChartService] draw locked...');
+            }
+
+            function unLockDraw() {
+                _lockDraw = false;
+                console.log('[GoogleChartService] draw unlocked...');
+
+                // if draw are locked, maybe exists some chances
+                // that need to be updated with a new draw
+                //draw();
+            }
+
+            function isDrawLocked() {
+                return _lockDraw;
             }
 
             function registerChartListener(eventName, listenerFn, listenerObject) {

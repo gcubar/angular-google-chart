@@ -1,4 +1,4 @@
-/*! angular-google-chart 2017-05-20 */
+/*! angular-google-chart 2018-04-20 */
 /*
 * @description Google Chart Api Directive Module for AngularJS
 * @version 1.0.0-beta.1
@@ -175,7 +175,12 @@
             self.registerChartListener = googleChartService.registerChartListener;
             self.registerWrapperListener = googleChartService.registerWrapperListener;
             self.registerServiceListener = googleChartService.registerServiceListener;
-            
+
+            // locker functionality
+            self.lockDraw = googleChartService.lockDraw;
+            self.unLockDraw = googleChartService.unLockDraw;
+            self.isDrawLocked = googleChartService.isDrawLocked;
+
             /* Watches, to refresh the chart when its data, formatters, options, view,
             or type change. All other values intentionally disregarded to avoid double
             calls to the draw function. Please avoid making changes to these objects
@@ -183,7 +188,7 @@
             $scope.$watch(watchValue, watchHandler, true); // true is for deep object equality checking
 
             // Redraw the chart if the window is resized
-            resizeHandler = $rootScope.$on('resizeMsg', drawAsync);
+            resizeHandler = $rootScope.$on('resizeMsg', resizeMsgHandler);
 
             //Cleanup resize handler.
             $scope.$on('$destroy', cleanup);
@@ -202,7 +207,14 @@
         }
 
         function watchHandler() {
+            console.log('[GoogleChartController] watchHandler called...');
             self.chart = $scope.$eval($attrs.chart);
+            console.log(self.chart);
+            drawAsync();
+        }
+
+        function resizeMsgHandler() {
+            console.log('[GoogleChartController] resizeMsgHandler called...');
             drawAsync();
         }
 
@@ -359,9 +371,8 @@
     angular.module("googlechart")
         .factory("agcJsapiLoader", agcJsapiLoaderFactory);
 
-    agcJsapiLoaderFactory.$inject = ["$log", "$rootScope", "$q", "agcScriptTagHelper", "googleChartApiConfig"];
-    function agcJsapiLoaderFactory($log, $rootScope, $q, agcScriptTagHelper, googleChartApiConfig){
-        $log.debug("[AGC] jsapi loader invoked.");
+    agcJsapiLoaderFactory.$inject = ["$rootScope", "$q", "agcScriptTagHelper", "googleChartApiConfig"];
+    function agcJsapiLoaderFactory($rootScope, $q, agcScriptTagHelper, googleChartApiConfig){
         var apiReady = $q.defer();
         // Massage configuration as needed.
         googleChartApiConfig.optionalSettings = googleChartApiConfig.optionalSettings || {};
@@ -381,14 +392,11 @@
 
         settings = angular.extend({}, googleChartApiConfig.optionalSettings, settings);
 
-        $log.debug("[AGC] Calling tag helper...");
         agcScriptTagHelper("https://www.google.com/jsapi")
             .then(function(){
-                $log.debug("[AGC] Tag helper returned success.");
                 window.google.load('visualization', googleChartApiConfig.version || '1', settings);
             })
             .catch(function(){
-                $log.error("[AGC] Tag helper returned error. Script may have failed to load.");
                 apiReady.reject();
             });
 
@@ -426,6 +434,26 @@
         };
 
         this.setLoader(DEFAULT_LOADER);
+    }
+})();
+
+/* global angular */
+(function(){
+    angular.module('googlechart')
+        .directive('agcLocker', lockerDirective);
+
+    function lockerDirective(){
+        return {
+            restrict: 'A',
+            scope: false,
+            require: 'googleChart',
+            link: function(scope, element, attrs, googleChartController){
+                locker = scope[attrs.agcLocker] || {};
+                locker.lockDraw = googleChartController.lockDraw;
+                locker.unLockDraw = googleChartController.unLockDraw;
+                locker.isDrawLocked = googleChartController.isDrawLocked;
+            }
+        };
     }
 })();
 
@@ -785,6 +813,9 @@
             self.setOptions = setOptions;
             self.setup = setup;
             self.setView = setView;
+            self.lockDraw = lockDraw;
+            self.unLockDraw = unLockDraw;
+            self.isDrawLocked = isDrawLocked;
 
             var $google,
                 _libraryPromise,
@@ -799,6 +830,7 @@
                 _innerVisualization,
                 _formatManager,
                 _needsUpdate = true,
+                _lockDraw = false,
                 _customFormatters,
                 _serviceDeferred,
                 serviceListeners = {},
@@ -951,8 +983,12 @@
             }
 
             function _runDrawCycle() {
-                _activateServiceEvent('beforeDraw');
-                _chartWrapper.draw();
+                console.log('[GoogleChartService] running draw cycle...');
+                if (!isDrawLocked() && _chartWrapper !== undefined) {
+                    console.log('[GoogleChartService] -> before draw...');
+                    _activateServiceEvent('beforeDraw');
+                    _chartWrapper.draw();
+                }
             }
 
             /*
@@ -1005,6 +1041,24 @@
 
             function isApiReady() {
                 return _apiReady;
+            }
+
+            function lockDraw() {
+                _lockDraw = true;
+                console.log('[GoogleChartService] draw locked...');
+            }
+
+            function unLockDraw() {
+                _lockDraw = false;
+                console.log('[GoogleChartService] draw unlocked...');
+
+                // if draw are locked, maybe exists some chances
+                // that need to be updated with a new draw
+                //draw();
+            }
+
+            function isDrawLocked() {
+                return _lockDraw;
             }
 
             function registerChartListener(eventName, listenerFn, listenerObject) {
@@ -1070,5 +1124,3 @@
         return GoogleChartService;
     }
 })();
-
-//# sourceMappingURL=ng-google-chart.js.map

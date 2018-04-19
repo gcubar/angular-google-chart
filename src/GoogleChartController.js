@@ -48,7 +48,12 @@
             self.registerChartListener = googleChartService.registerChartListener;
             self.registerWrapperListener = googleChartService.registerWrapperListener;
             self.registerServiceListener = googleChartService.registerServiceListener;
-            
+
+            // locker functionality
+            self.lockDraw = googleChartService.lockDraw;
+            self.unLockDraw = googleChartService.unLockDraw;
+            self.isDrawLocked = googleChartService.isDrawLocked;
+
             /* Watches, to refresh the chart when its data, formatters, options, view,
             or type change. All other values intentionally disregarded to avoid double
             calls to the draw function. Please avoid making changes to these objects
@@ -56,7 +61,7 @@
             $scope.$watch(watchValue, watchHandler, true); // true is for deep object equality checking
 
             // Redraw the chart if the window is resized
-            resizeHandler = $rootScope.$on('resizeMsg', drawAsync);
+            resizeHandler = $rootScope.$on('resizeMsg', resizeMsgHandler);
 
             //Cleanup resize handler.
             $scope.$on('$destroy', cleanup);
@@ -75,7 +80,14 @@
         }
 
         function watchHandler() {
+            console.log('[GoogleChartController] watchHandler called...');
             self.chart = $scope.$eval($attrs.chart);
+            console.log(self.chart);
+            drawAsync();
+        }
+
+        function resizeMsgHandler() {
+            console.log('[GoogleChartController] resizeMsgHandler called...');
             drawAsync();
         }
 

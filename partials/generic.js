@@ -2,6 +2,14 @@
 angular.module("google-chart-sample").controller("GenericChartCtrl", function ($scope, $routeParams) {
     $scope.chartObject = {};
 
+    $scope.locker = {
+        lockDraw: function() {  },
+        unLockDraw: function() {  },
+        isDrawLocked: function() { return false; }
+    };
+
+    $scope.locker.lockDraw();
+
     $scope.onions = [
         {v: "Onions"},
         {v: 3},
@@ -36,5 +44,14 @@ angular.module("google-chart-sample").controller("GenericChartCtrl", function ($
     $scope.chartObject.options = {
         'title': 'How Much Pizza I Ate Last Night'
     };
-});
 
+    $scope.chartReadyCounter = 0;
+
+    $scope.chartReady = function() {
+        $scope.chartReadyCounter++;
+        console.log('GENERIC - chart ready counter = ' + $scope.chartReadyCounter);
+    };
+
+    $scope.locker.unLockDraw();
+
+});

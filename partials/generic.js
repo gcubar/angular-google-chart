@@ -15,21 +15,24 @@ angular.module("google-chart-sample").controller("GenericChartCtrl",
             {v: 3},
         ];
 
-        // $routeParams.chartType == BarChart or PieChart or ColumnChart...
-        $scope.chartObject.type = $routeParams.chartType;
-        $scope.chartObject.options = {
-            'title': 'How Much Pizza I Ate Last Night'
-        };
-
-        $scope.chartObject.data = {
-            "cols": [
-                {id: "t", label: "Topping", type: "string"},
-                {id: "s", label: "Slices", type: "number"}
-            ]
-        };
-
         $timeout(function() {
+
+            // NOTE: at this level, $scope.locker are redefined with
+            // correct control that come from angular-chart directive
             $scope.locker.lockDraw();
+
+            // $routeParams.chartType == BarChart or PieChart or ColumnChart...
+            $scope.chartObject.type = $routeParams.chartType;
+            $scope.chartObject.options = {
+                'title': 'How Much Pizza I Ate Last Night'
+            };
+
+            $scope.chartObject.data = {
+                "cols": [
+                    {id: "t", label: "Topping", type: "string"},
+                    {id: "s", label: "Slices", type: "number"}
+                ]
+            };
 
             $scope.chartObject.data.rows = [
                 {c: [
@@ -52,6 +55,7 @@ angular.module("google-chart-sample").controller("GenericChartCtrl",
             ];
 
             $scope.locker.unLockDraw();
+
         }, 5000);
 
         $scope.chartReadyCounter = 0;

@@ -208,14 +208,14 @@
         }
 
         function watchHandler() {
-            console.log('[GoogleChartController] watchHandler called...');
+            //console.log('[GoogleChartController] watchHandler called...');
             self.chart = $scope.$eval($attrs.chart);
-            console.log(JSON.stringify(self.chart));
+            //console.log(JSON.stringify(self.chart));
             drawAsync();
         }
 
         function resizeMsgHandler() {
-            console.log('[GoogleChartController] resizeMsgHandler called...');
+            //console.log('[GoogleChartController] resizeMsgHandler called...');
             drawAsync();
         }
 
@@ -985,9 +985,9 @@
             }
 
             function _runDrawCycle() {
-                console.log('[GoogleChartService] running draw cycle...');
+                //console.log('[GoogleChartService] running draw cycle...');
                 if (!isDrawLocked() && _chartWrapper !== undefined) {
-                    console.log('[GoogleChartService] -> before draw...');
+                    //console.log('[GoogleChartService] -> before draw...');
                     _activateServiceEvent('beforeDraw');
                     _chartWrapper.draw();
                 }
@@ -1047,12 +1047,12 @@
 
             function lockDraw() {
                 _lockDraw = true;
-                console.log('[GoogleChartService] draw locked...');
+                //console.log('[GoogleChartService] draw locked...');
             }
 
             function unLockDraw() {
                 _lockDraw = false;
-                console.log('[GoogleChartService] draw unlocked...');
+                //console.log('[GoogleChartService] draw unlocked...');
 
                 // if draw are locked, maybe exists some chances
                 // that need to be updated with a new draw

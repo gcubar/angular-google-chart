@@ -81,14 +81,14 @@
         }
 
         function watchHandler() {
-            console.log('[GoogleChartController] watchHandler called...');
+            //console.log('[GoogleChartController] watchHandler called...');
             self.chart = $scope.$eval($attrs.chart);
-            console.log(JSON.stringify(self.chart));
+            //console.log(JSON.stringify(self.chart));
             drawAsync();
         }
 
         function resizeMsgHandler() {
-            console.log('[GoogleChartController] resizeMsgHandler called...');
+            //console.log('[GoogleChartController] resizeMsgHandler called...');
             drawAsync();
         }
 

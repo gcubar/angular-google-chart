@@ -68,13 +68,14 @@
         }
 
         function setupAndDraw() {
+            self.chart.data = self.chart.data || {};
             googleChartService.setup($element,
-            self.chart.type,
-            self.chart.data,
-            self.chart.view,
-            self.chart.options,
-            self.chart.formatters,
-            self.chart.customFormatters);
+                self.chart.type,
+                JSON.parse(JSON.stringify(self.chart.data)), // clone object instead of pass by ref
+                self.chart.view,
+                self.chart.options,
+                self.chart.formatters,
+                self.chart.customFormatters);
 
             $timeout(drawChartWrapper);
         }
@@ -82,7 +83,7 @@
         function watchHandler() {
             console.log('[GoogleChartController] watchHandler called...');
             self.chart = $scope.$eval($attrs.chart);
-            console.log(self.chart);
+            console.log(JSON.stringify(self.chart));
             drawAsync();
         }
 
@@ -94,9 +95,10 @@
         function watchValue() {
             var chartObject = $scope.$eval($attrs.chart);
             if (angular.isDefined(chartObject) && angular.isObject(chartObject)) {
+                chartObject.data = chartObject.data || {};
                 return {
                     customFormatters: chartObject.customFormatters,
-                    data: chartObject.data,
+                    data: JSON.parse(JSON.stringify(chartObject.data)), // clone object instead of pass by ref
                     formatters: chartObject.formatters,
                     options: chartObject.options,
                     type: chartObject.type,

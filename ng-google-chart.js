@@ -1,4 +1,4 @@
-/*! angular-google-chart 2018-04-19 */
+/*! angular-google-chart 2018-04-21 */
 /*
 * @description Google Chart Api Directive Module for AngularJS
 * @version 1.0.0-beta.1
@@ -208,10 +208,12 @@
         }
 
         function watchHandler() {
-            //console.log('[GoogleChartController] watchHandler called...');
             self.chart = $scope.$eval($attrs.chart);
-            //console.log(JSON.stringify(self.chart));
-            drawAsync();
+            if (self.chart !== undefined) {
+                //console.log('[GoogleChartController] watchHandler called...');
+                //console.log(JSON.stringify(self.chart));
+                drawAsync();
+            }
         }
 
         function resizeMsgHandler() {
@@ -1126,3 +1128,5 @@
         return GoogleChartService;
     }
 })();
+
+//# sourceMappingURL=ng-google-chart.js.map

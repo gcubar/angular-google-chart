@@ -1,4 +1,4 @@
-/*! angular-google-chart 2018-04-21 */
+/*! angular-google-chart 2018-05-19 */
 /*
 * @description Google Chart Api Directive Module for AngularJS
 * @version 1.0.0-beta.1
@@ -473,14 +473,16 @@
     function AgcNullLoaderProvider(){
         this._hasTrigger = false;
         this._libraryOverride = null;
-        this._triggerFunction = (function(){
-            // If the trigger function is called before $get,
-            // just act as if it was never fetched.
-            if (this._deferred)
-                this._deferred.resolve(this._libraryOverride || google);
-            else
-                this._hasTrigger = false;
-        }).bind(this);
+        if(this._triggerFunction !== null && this._triggerFunction !== undefined){
+           this._triggerFunction = (function(){
+                // If the trigger function is called before $get,
+                // just act as if it was never fetched.
+                if (this._deferred)
+                    this._deferred.resolve(this._libraryOverride || google);
+                else
+                    this._hasTrigger = false;
+            }).bind(this);
+        }        
         this._deferred = null;
     }
 
@@ -1128,5 +1130,3 @@
         return GoogleChartService;
     }
 })();
-
-//# sourceMappingURL=ng-google-chart.js.map

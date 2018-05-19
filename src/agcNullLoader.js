@@ -10,7 +10,7 @@
     function AgcNullLoaderProvider(){
         this._hasTrigger = false;
         this._libraryOverride = null;
-        if(this._triggerFunction != null && this._triggerFunction != undefined){
+        if(this._triggerFunction !== null && this._triggerFunction !== undefined){
            this._triggerFunction = (function(){
                 // If the trigger function is called before $get,
                 // just act as if it was never fetched.
